@@ -11,12 +11,12 @@ namespace UniversalConfig
     {
         Int = 0,
         Float = 1,
-        String = 3,
-        Bool=4,
-        IntArray =5,
-        FloatArray = 6,
-        StringArray = 7,
-        BoolArray = 8
+        String = 2,
+        Bool=3,
+        IntArray=4,
+        FloatArray = 5,
+        StringArray = 6,
+        BoolArray = 7
     }
     partial class UniversalConfigMeta : IDisposable
     {
@@ -48,6 +48,7 @@ namespace UniversalConfig
 
     public partial class UniversalConfigReader : UniversalConfigMeta
     {
-
+        private string s_pContent;
+        public string s_Content { get { return s_pContent; } }
     }
 }

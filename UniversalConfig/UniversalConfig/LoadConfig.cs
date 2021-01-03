@@ -20,17 +20,17 @@ namespace UniversalConfig
             CorrectString(ref s_Unitname);
             return Meta.s_Unit.Replace("#1",s_Unitname);
         }
-        protected string CreateRegister(ref string s_Registername,int i_Type)
+        protected string CreateRegister(ref string s_Registername, UniversalConfigTypes i_Type,string s_Value = "NULL")
         {
             CorrectString(ref s_Registername);
-            return Meta.s_Register.Replace("#1", s_Registername).Replace("#2", Meta.s_Types[i_Type%9]).Replace("#3", Meta.s_Null);
+            return Meta.s_Register.Replace("#1", s_Registername).Replace("#2", Meta.s_Types[(int)i_Type%9]).Replace("#3", s_Value);
         }
         protected bool Open(string i_Path)
         {
             this.s_pPath = i_Path;  
             try
             {
-                this.o_Stream = File.Open(this.s_pPath,FileMode.Open);
+                this.o_Stream = File.Open(this.s_pPath,FileMode.Open, FileAccess.ReadWrite);
             }
             catch (Exception o_Exception)
             {
@@ -53,6 +53,7 @@ namespace UniversalConfig
             {
                 if (b_Disposing)
                 {
+
                     o_Stream.Dispose();
                 }
 
