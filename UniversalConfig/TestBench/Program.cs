@@ -15,23 +15,31 @@ namespace TestBench
             //using (UniversalConfigCreator o_Creator = new UniversalConfigCreator("test.ufg"))
             //{
             //    o_Creator.AppendUnit("REG1");
-            //    o_Creator.AppendUnit("REG2");
-            //    o_Creator.AppendRegister("REG1", "HEl", 0);
-            //    o_Creator.AppendRegister("REG1", "HI", 1);
-            //    o_Creator.AppendRegister("REG1", "LO", 2);
+            //    o_Creator.AppendRegister("REG1", "Int", typeof(int));
+    
             //    Console.WriteLine(o_Creator.Build());
             //    Console.WriteLine(o_Creator.S_FileContent);
             //}
 
             using (UniversalConfigReader o_Reader = new UniversalConfigReader("test.ufg"))
             {
-                o_Reader.LoadConfig();
-                Console.WriteLine(o_Reader.GetRawValue("REG1", "HEl", UniversalConfigTypes.Int));
-                Console.WriteLine(o_Reader.GetRawValue("REG1", "HI", UniversalConfigTypes.Float));
-                Console.WriteLine(o_Reader.GetRawValue("REG1", "LO", UniversalConfigTypes.String));
+                //int itest = o_Reader.GetValue<int>("REG1", "Int");
 
-                o_Reader.SetRawValue("REG1", "LO", UniversalConfigTypes.String, "1.1");
-                Console.WriteLine(o_Reader.GetRawValue("REG1", "LO", UniversalConfigTypes.String));
+                //Console.WriteLine(itest);
+                //o_Reader.SetValue<int>("REG1", "Int", itest + 1);
+
+
+                int[] liste = new int[] { 1, 6, 8, 6 };
+                o_Reader.SetArray<int>("REG1", "Int", liste);
+                int[] getliste = o_Reader.GetArray<int>("REG1", "Int");
+
+                if (getliste != null)
+                {
+                    Console.WriteLine(getliste[0]);
+                    Console.WriteLine(getliste[1]);
+                    Console.WriteLine(getliste[2]);
+                    Console.WriteLine(getliste[3]);
+                }
                 Console.WriteLine(o_Reader.s_Content);
 
                 o_Reader.SaveConfig();

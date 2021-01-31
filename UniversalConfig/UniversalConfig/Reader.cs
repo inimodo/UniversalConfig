@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Reflection;
 namespace UniversalConfig
 {
     public partial class UniversalConfigReader : UniversalConfigMeta
@@ -11,6 +12,7 @@ namespace UniversalConfig
         public UniversalConfigReader(string i_Path)
         {
             Open(i_Path);
+            LoadConfig();
         }
         public bool LoadConfig()
         {
@@ -44,7 +46,7 @@ namespace UniversalConfig
             }
             return true;
         }
-        public string GetRawValue(string s_Unitname,string s_Register, UniversalConfigTypes i_Type )
+        public string GetRawValue(string s_Unitname,string s_Register, Type i_Type )
         {
             string s_Output="";
             if (this.s_pContent != null)
@@ -65,7 +67,7 @@ namespace UniversalConfig
             else return null;
             return s_Output;
         }
-        public void SetRawValue(string s_Unitname, string s_Register, UniversalConfigTypes i_Type,string s_Value="NULL")
+        public void SetRawValue(string s_Unitname, string s_Register, Type i_Type,string s_Value="NULL")
         {
             string s_Output = "";
             if (this.s_pContent != null)
@@ -88,105 +90,64 @@ namespace UniversalConfig
                 this.s_pContent = this.s_Content.Replace(s_OldRegister, s_NewRegister);
             }
         }
-        public void SetValue(string s_Unitname, string s_Register, int i_Value)
-        {
-            SetRawValue(s_Unitname, s_Register, UniversalConfigTypes.Int,i_Value.ToString());
-        }
-        public void SetValue(string s_Unitname, string s_Register, float f_Value)
-        {
-            SetRawValue(s_Unitname, s_Register, UniversalConfigTypes.Float, f_Value.ToString());
 
-        }
-        public void SetValue(string s_Unitname, string s_Register, string s_Value)
+        public void SetValue<T>(string s_Unitname, string s_Register, T i_Value)
         {
-            SetRawValue(s_Unitname, s_Register, UniversalConfigTypes.String, s_Value);
+            SetRawValue(s_Unitname, s_Register, typeof(T), i_Value.ToString());
         }
-        public void SetValue(string s_Unitname, string s_Register, int[] i_Value)
+
+
+        public T GetValue<T>(string s_Unitname, string s_Register)
         {
 
+            Type o_Type = typeof(T);
+            string s_Value = GetRawValue(s_Unitname, s_Register, o_Type);
+            MethodInfo o_Parse =  o_Type.GetMethod("TryParse",new Type[] { typeof(string),typeof(T).MakeByRefType()});
+            if (o_Parse != null)
+            { 
+                Object[] o_Params = new object[] { s_Value, null };
+                Object o_result = o_Parse.Invoke(null, o_Params);
+
+                if(o_result != null)return (T)o_Params[1];
+            }
+            return default(T);
+        }
+
+        public void SetArray<T>(string s_Unitname, string s_Register, T[] i_Value)
+        {
             string s_Values = i_Value[0].ToString();
             for (int i_Index = 1; i_Index < i_Value.Length; i_Index++)
             {
                 s_Values += "|" + i_Value[i_Index].ToString();
             }
-            SetRawValue(s_Unitname, s_Register, UniversalConfigTypes.IntArray, s_Values);
-
-        }
-        public void SetValue(string s_Unitname, string s_Register, float[] f_Value)
-        {
-            string s_Values = f_Value[0].ToString();
-            for (int i_Index = 1; i_Index < f_Value.Length; i_Index++)
-            {
-                s_Values += "|" + f_Value[i_Index].ToString(); 
-            }
-            SetRawValue(s_Unitname, s_Register, UniversalConfigTypes.FloatArray, s_Values);
-        }
-        public void SetValue(string s_Unitname, string s_Register, string[] s_Value)
-        {
-            string s_Values = s_Value[0];
-            for (int i_Index = 1; i_Index < s_Value.Length; i_Index++)
-            {
-                s_Values += "|" + s_Value[i_Index];
-            }
-            SetRawValue(s_Unitname, s_Register, UniversalConfigTypes.StringArray, s_Values);
+            SetRawValue(s_Unitname, s_Register, typeof(T), s_Values);
         }
 
 
-        public bool GetValue(string s_Unitname, string s_Register, ref int i_Value)
+        public T[] GetArray<T>(string s_Unitname, string s_Register)
         {
-            return int.TryParse(GetRawValue(s_Unitname, s_Register, UniversalConfigTypes.Int),out i_Value);
-        }
-        public bool GetValue(string s_Unitname, string s_Register, ref float f_Value)
-        {
-            return float.TryParse(GetRawValue(s_Unitname, s_Register, UniversalConfigTypes.Float), out f_Value);
-        }
-        public bool GetValue(string s_Unitname, string s_Register, ref string s_Value)
-        {
-            s_Value = GetRawValue(s_Unitname, s_Register, UniversalConfigTypes.String);
-            if ( s_Value== null) return false;
-            return true;
-        }
-        public bool GetValue(string s_Unitname, string s_Register, ref int[] i_Value)
-        {
-            string s_Values = GetRawValue(s_Unitname, s_Register, UniversalConfigTypes.IntArray);
-            if (s_Values == null) return false;
+            Type o_Type = typeof(T);
+            string s_Values = GetRawValue(s_Unitname, s_Register, o_Type);
+            MethodInfo o_Parse = o_Type.GetMethod("TryParse", new Type[] { typeof(string), typeof(T).MakeByRefType() });
+
+            if (s_Values == null) return null;
             string[] s_pValues = s_Values.Split('|');
-            i_Value = new int[s_pValues.Length];
+            T[] i_Value = new T[s_pValues.Length];
             for (int i_Index = 0; i_Index < s_pValues.Length; i_Index++)
             {
-                if (!int.TryParse(s_pValues[i_Index], out i_Value[i_Index]))
+                if (o_Parse != null)
                 {
-                    return false;
+                    Object[] o_Params = new object[] { s_pValues[i_Index], null };
+                    Object o_result = o_Parse.Invoke(null, o_Params);
+
+                    if (o_result != null) i_Value[i_Index] = (T)o_Params[1];
+                    else return null;
                 }
+                else return null;
             }
-            return true;
-        }
-        public bool GetValue(string s_Unitname, string s_Register, ref float[] f_Value)
-        {
-            string s_Values = GetRawValue(s_Unitname, s_Register, UniversalConfigTypes.FloatArray);
-            if (s_Values == null) return false;
-            string[] s_pValues = s_Values.Split('|');
-            f_Value = new float[s_pValues.Length];
-            for (int i_Index = 0; i_Index < s_pValues.Length; i_Index++)
-            {
-                if (!float.TryParse(s_pValues[i_Index], out f_Value[i_Index]))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return i_Value;
 
         }
-        public bool GetValue(string s_Unitname, string s_Register, ref string[] s_Value)
-        {
-            string s_Values = GetRawValue(s_Unitname, s_Register, UniversalConfigTypes.StringArray);
-            if (s_Values == null) return false;
-            s_Value = s_Values.Split('|');
-
-            return true;
-        }
-
-
 
     }
 }

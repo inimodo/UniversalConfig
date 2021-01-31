@@ -20,10 +20,10 @@ namespace UniversalConfig
             CorrectString(ref s_Unitname);
             return Meta.s_Unit.Replace("#1",s_Unitname);
         }
-        protected string CreateRegister(ref string s_Registername, UniversalConfigTypes i_Type,string s_Value = "NULL")
+        protected string CreateRegister(ref string s_Registername, Type i_Type,string s_Value = "NULL")
         {
             CorrectString(ref s_Registername);
-            return Meta.s_Register.Replace("#1", s_Registername).Replace("#2", Meta.s_Types[(int)i_Type%9]).Replace("#3", s_Value);
+            return Meta.s_Register.Replace("#1", s_Registername).Replace("#2",i_Type.ToString()).Replace("#3", s_Value);
         }
         protected bool Open(string i_Path)
         {

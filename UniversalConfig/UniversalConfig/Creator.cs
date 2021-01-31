@@ -29,7 +29,7 @@ namespace UniversalConfig
 
             this.s_pFileContent = this.s_pFileContent.Replace("#unit#", CreateUnit(ref s_Unitname) + "{#"+s_Unitname+"#}#unit#");
         }
-        public bool AppendRegister(string s_Unitname,string s_Registername, UniversalConfigTypes i_Type )
+        public bool AppendRegister(string s_Unitname,string s_Registername, Type i_Type )
         {
             this.s_pFileContent = this.s_pFileContent.Replace("#" + s_Unitname + "#", CreateRegister(ref s_Registername,i_Type) + "#" + s_Unitname + "#");
 

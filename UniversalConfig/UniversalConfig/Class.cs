@@ -7,17 +7,6 @@ using System.IO;
 namespace UniversalConfig
 {
 
-    public enum UniversalConfigTypes
-    {
-        Int = 0,
-        Float = 1,
-        String = 2,
-        Bool=3,
-        IntArray=4,
-        FloatArray = 5,
-        StringArray = 6,
-        BoolArray = 7
-    }
     partial class UniversalConfigMeta : IDisposable
     {
         protected static class Meta
@@ -28,7 +17,6 @@ namespace UniversalConfig
             public static readonly string s_RegisterFront = "[#1:#2=";
             public static readonly string s_RegisterBack = "]";        
             public static readonly string s_Null = "NULL";        
-            public static readonly string[] s_Types = { "INT", "FLT", "STR" ,"TFV", "ITA","FTA", "SRA", "TFA" };        
             public static readonly char[] c_Forbiden = { ']','[','{', '}', ':', '=' ,'#'};        
         }
         public bool b_Disposed;
