@@ -36,7 +36,7 @@ namespace UniversalConfig
             {
                 StreamWriter o_Writer = new StreamWriter(this.o_Stream);
                 this.o_Stream.Seek(0, 0);
-                o_Writer.Write(this.s_pContent);
+                o_Writer.WriteLine(this.s_pContent);
                 o_Writer.Flush();
             }
             catch (Exception o_Exception)
@@ -115,10 +115,14 @@ namespace UniversalConfig
 
         public void SetArray<T>(string s_Unitname, string s_Register, T[] i_Value)
         {
-            string s_Values = i_Value[0].ToString();
-            for (int i_Index = 1; i_Index < i_Value.Length; i_Index++)
+            string s_Values = Meta.s_Null;
+            if (i_Value != null)
             {
-                s_Values += "|" + i_Value[i_Index].ToString();
+                s_Values= i_Value[0].ToString();
+                for (int i_Index = 1; i_Index < i_Value.Length; i_Index++)
+                {
+                    s_Values += "|" + i_Value[i_Index].ToString();
+                }
             }
             SetRawValue(s_Unitname, s_Register, typeof(T), s_Values);
         }
@@ -130,7 +134,7 @@ namespace UniversalConfig
             string s_Values = GetRawValue(s_Unitname, s_Register, o_Type);
             MethodInfo o_Parse = o_Type.GetMethod("TryParse", new Type[] { typeof(string), typeof(T).MakeByRefType() });
 
-            if (s_Values == null) return null;
+            if (s_Values == null|| s_Values==Meta.s_Null) return null;
             string[] s_pValues = s_Values.Split('|');
             T[] i_Value = new T[s_pValues.Length];
             for (int i_Index = 0; i_Index < s_pValues.Length; i_Index++)
@@ -146,6 +150,20 @@ namespace UniversalConfig
                 else return null;
             }
             return i_Value;
+
+        }
+        public string[] GetAsStringArray(string s_Unitname, string s_Register,Type o_Type)
+        {
+            string s_Values = GetRawValue(s_Unitname, s_Register, o_Type);
+            if (s_Values == null || s_Values == Meta.s_Null) return null;
+            string[] s_pValues;
+            if (s_Values.Contains('|')) s_pValues = s_Values.Split('|');
+            else
+            {
+                s_pValues = new string[1];
+                s_pValues[0] = s_Values;
+            }
+            return s_pValues;
 
         }
 

@@ -29,9 +29,7 @@ namespace TestBench
                 //o_Reader.SetValue<int>("REG1", "Int", itest + 1);
 
 
-                int[] liste = new int[] { 1, 6, 8, 6 };
-                o_Reader.SetArray<int>("REG1", "Int", liste);
-                int[] getliste = o_Reader.GetArray<int>("REG1", "Int");
+                string[] getliste = o_Reader.GetArray<string>("REG1", "Int");
 
                 if (getliste != null)
                 {

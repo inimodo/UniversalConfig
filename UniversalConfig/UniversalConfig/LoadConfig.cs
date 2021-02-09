@@ -53,8 +53,7 @@ namespace UniversalConfig
             {
                 if (b_Disposing)
                 {
-
-                    o_Stream.Dispose();
+                    if(o_Stream!=null)o_Stream.Dispose();
                 }
 
                 this.b_Disposed = true;
