@@ -96,7 +96,7 @@ string[] GetAsStringArray(string s_Unitname, string s_Register,Type o_Type)
 Gets a raw data array at a specific _Unit_ and _Register_. 
 
 ## Usage
-Both classes are to designed to be used with the ```using``` keyword as showed in this examples.
+Both classes are designed to be used with the ```using``` keyword as shown in this examples.
 
 _Example for file Creation_
 ```CS
